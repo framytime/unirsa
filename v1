@@ -1,0 +1,435 @@
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+-- Получаем локального игрока
+local player = Players.LocalPlayer
+local gui = Instance.new("ScreenGui")
+gui.Name = "XenithHubVerify"
+gui.ResetOnSpawn = false
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+gui.Parent = player:WaitForChild("PlayerGui")
+
+-- Основной контейнер
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 500, 0, 450)
+mainFrame.Position = UDim2.new(0.5, -250, 0.5, -225)
+mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+mainFrame.BackgroundTransparency = 1
+mainFrame.Parent = gui
+
+-- Анимированный фон с градиентом
+local background = Instance.new("Frame")
+background.Name = "Background"
+background.Size = UDim2.new(1, 0, 1, 0)
+background.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+background.BorderSizePixel = 0
+background.Parent = mainFrame
+
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 30, 40)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(25, 25, 35)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 20, 30))
+})
+gradient.Rotation = 45
+gradient.Parent = background
+
+-- Эффект свечения
+local glow = Instance.new("ImageLabel")
+glow.Name = "Glow"
+glow.Size = UDim2.new(1, 100, 1, 100)
+glow.Position = UDim2.new(0.5, -50, 0.5, -50)
+glow.AnchorPoint = Vector2.new(0.5, 0.5)
+glow.BackgroundTransparency = 1
+glow.Image = "rbxassetid://8992230675"
+glow.ImageColor3 = Color3.fromRGB(100, 70, 255)
+glow.ImageTransparency = 0.8
+glow.ScaleType = Enum.ScaleType.Slice
+glow.SliceCenter = Rect.new(100, 100, 100, 100)
+glow.Parent = background
+
+-- Контейнер для контента
+local container = Instance.new("Frame")
+container.Name = "Container"
+container.Size = UDim2.new(1, -40, 1, -40)
+container.Position = UDim2.new(0.5, -180, 0.5, -185)
+container.AnchorPoint = Vector2.new(0.5, 0.5)
+container.BackgroundTransparency = 1
+container.Parent = background
+
+-- Анимированная иконка замка
+local lockIcon = Instance.new("ImageLabel")
+lockIcon.Name = "LockIcon"
+lockIcon.Size = UDim2.new(0, 80, 0, 80)
+lockIcon.Position = UDim2.new(0.5, -40, 0, 20)
+lockIcon.AnchorPoint = Vector2.new(0.5, 0)
+lockIcon.BackgroundTransparency = 1
+lockIcon.Image = "rbxassetid://10734986883"
+lockIcon.ImageColor3 = Color3.fromRGB(120, 90, 255)
+lockIcon.Parent = container
+
+-- Заголовок
+local title = Instance.new("TextLabel")
+title.Name = "Title"
+title.Size = UDim2.new(1, 0, 0, 60)
+title.Position = UDim2.new(0, 0, 0, 120)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.GothamBold
+title.Text = "XenithHub Verify🗝️"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 32
+title.TextStrokeTransparency = 0.8
+title.TextStrokeColor3 = Color3.fromRGB(100, 70, 255)
+title.Parent = container
+
+-- Градиент для текста заголовка
+local titleGradient = Instance.new("UIGradient")
+titleGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(160, 120, 255)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(130, 90, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 70, 255))
+})
+titleGradient.Parent = title
+
+-- Разделительная линия
+local line = Instance.new("Frame")
+line.Name = "Divider"
+line.Size = UDim2.new(1, 0, 0, 2)
+line.Position = UDim2.new(0, 0, 0, 185)
+line.BackgroundColor3 = Color3.fromRGB(100, 70, 255)
+line.BorderSizePixel = 0
+line.Parent = container
+
+local lineGradient = Instance.new("UIGradient")
+lineGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 70, 255)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(160, 120, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 70, 255))
+})
+lineGradient.Parent = line
+
+-- Текст инструкции
+local instruction = Instance.new("TextLabel")
+instruction.Name = "Instruction"
+instruction.Size = UDim2.new(1, 0, 0, 30)
+instruction.Position = UDim2.new(0, 0, 0, 200)
+instruction.BackgroundTransparency = 1
+instruction.Font = Enum.Font.Gotham
+instruction.Text = "Введите ваш верификационный ключ:"
+instruction.TextColor3 = Color3.fromRGB(200, 200, 220)
+instruction.TextSize = 18
+instruction.TextXAlignment = Enum.TextXAlignment.Left
+instruction.Parent = container
+
+-- Поле ввода
+local inputFrame = Instance.new("Frame")
+inputFrame.Name = "InputFrame"
+inputFrame.Size = UDim2.new(1, 0, 0, 50)
+inputFrame.Position = UDim2.new(0, 0, 0, 235)
+inputFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+inputFrame.BorderSizePixel = 0
+inputFrame.Parent = container
+
+-- Закругление поля ввода
+local inputCorner = Instance.new("UICorner")
+inputCorner.CornerRadius = UDim.new(0, 12)
+inputCorner.Parent = inputFrame
+
+-- Градиентная обводка для поля ввода
+local inputStroke = Instance.new("UIStroke")
+inputStroke.Color = ColorSequence.new(Color3.fromRGB(100, 70, 255)).Color
+inputStroke.Thickness = 2
+inputStroke.Parent = inputFrame
+
+-- Текстовое поле
+local textBox = Instance.new("TextBox")
+textBox.Name = "CodeInput"
+textBox.Size = UDim2.new(1, -20, 1, -10)
+textBox.Position = UDim2.new(0, 10, 0, 5)
+textBox.BackgroundTransparency = 1
+textBox.Font = Enum.Font.Gotham
+textBox.PlaceholderText = "Введите код верификации..."
+textBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 170)
+textBox.Text = ""
+textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+textBox.TextSize = 20
+textBox.TextXAlignment = Enum.TextXAlignment.Left
+textBox.Parent = inputFrame
+
+-- Кнопка Check Verify
+local checkButton = Instance.new("TextButton")
+checkButton.Name = "CheckButton"
+checkButton.Size = UDim2.new(1, 0, 0, 55)
+checkButton.Position = UDim2.new(0, 0, 0, 300)
+checkButton.BackgroundColor3 = Color3.fromRGB(100, 70, 255)
+checkButton.AutoButtonColor = false
+checkButton.Font = Enum.Font.GothamBold
+checkButton.Text = "🔐 CHECK VERIFY"
+checkButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+checkButton.TextSize = 22
+checkButton.Parent = container
+
+-- Закругление кнопки
+local checkCorner = Instance.new("UICorner")
+checkCorner.CornerRadius = UDim.new(0, 12)
+checkCorner.Parent = checkButton
+
+-- Градиент для кнопки
+local checkGradient = Instance.new("UIGradient")
+checkGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(120, 90, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(80, 50, 220))
+})
+checkGradient.Parent = checkButton
+
+-- Эффект свечения кнопки
+local checkGlow = Instance.new("Frame")
+checkGlow.Name = "ButtonGlow"
+checkGlow.Size = UDim2.new(1, 20, 1, 20)
+checkGlow.Position = UDim2.new(0.5, -90, 0.5, -27.5)
+checkGlow.AnchorPoint = Vector2.new(0.5, 0.5)
+checkGlow.BackgroundTransparency = 1
+checkGlow.Parent = checkButton
+
+local checkGlowImage = Instance.new("ImageLabel")
+checkGlowImage.Size = UDim2.new(1, 0, 1, 0)
+checkGlowImage.BackgroundTransparency = 1
+checkGlowImage.Image = "rbxassetid://8992230675"
+checkGlowImage.ImageColor3 = Color3.fromRGB(100, 70, 255)
+checkGlowImage.ImageTransparency = 0.9
+checkGlowImage.ScaleType = Enum.ScaleType.Slice
+checkGlowImage.SliceCenter = Rect.new(100, 100, 100, 100)
+checkGlowImage.Parent = checkGlow
+
+-- Кнопка Get Verify Link
+local getLinkButton = Instance.new("TextButton")
+getLinkButton.Name = "GetLinkButton"
+getLinkButton.Size = UDim2.new(1, 0, 0, 55)
+getLinkButton.Position = UDim2.new(0, 0, 0, 365)
+getLinkButton.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+getLinkButton.AutoButtonColor = false
+getLinkButton.Font = Enum.Font.GothamBold
+getLinkButton.Text = "🔗 GET VERIFY LINK"
+getLinkButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+getLinkButton.TextSize = 22
+getLinkButton.Parent = container
+
+-- Закругление второй кнопки
+local linkCorner = Instance.new("UICorner")
+linkCorner.CornerRadius = UDim.new(0, 12)
+linkCorner.Parent = getLinkButton
+
+-- Градиент для второй кнопки
+local linkGradient = Instance.new("UIGradient")
+linkGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(70, 70, 80)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(40, 40, 50))
+})
+linkGradient.Parent = getLinkButton
+
+-- Текст копирования
+local copyNotification = Instance.new("TextLabel")
+copyNotification.Name = "CopyNotification"
+copyNotification.Size = UDim2.new(1, 0, 0, 40)
+copyNotification.Position = UDim2.new(0, 0, 0, 430)
+copyNotification.BackgroundTransparency = 1
+copyNotification.Font = Enum.Font.Gotham
+copyNotification.Text = ""
+copyNotification.TextColor3 = Color3.fromRGB(100, 255, 100)
+copyNotification.TextSize = 16
+copyNotification.TextTransparency = 1
+copyNotification.Parent = container
+
+-- Анимации
+local time = 0
+local glowTweenIn = TweenService:Create(glow, TweenInfo.new(2, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut, -1, true), {
+    ImageTransparency = 0.6
+})
+
+local lineTween = TweenService:Create(line, TweenInfo.new(2, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut, -1, true), {
+    BackgroundTransparency = 0.3
+})
+
+local lockRotation = TweenService:Create(lockIcon, TweenInfo.new(4, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut, -1, true), {
+    Rotation = 5
+})
+
+local gradientTween = TweenService:Create(gradient, TweenInfo.new(5, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut, -1, true), {
+    Rotation = 135
+})
+
+local buttonGlowTween = TweenService:Create(checkGlowImage, TweenInfo.new(1.5, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut, -1, true), {
+    ImageTransparency = 0.7
+})
+
+-- Функция для анимации наведения на кнопку
+local function animateButtonHover(button, isHovering)
+    local goal = {}
+    if isHovering then
+        goal.Size = UDim2.new(1, 10, 0, 60)
+        goal.Position = UDim2.new(0, -5, goal.Position.Y.Scale, goal.Position.Y.Offset - 2.5)
+    else
+        goal.Size = button:GetAttribute("OriginalSize") or UDim2.new(1, 0, 0, 55)
+        goal.Position = button:GetAttribute("OriginalPosition") or UDim2.new(0, 0, 0, tonumber(string.match(tostring(button.Position), "(%d+)$")) or 0)
+    end
+    
+    local tween = TweenService:Create(button, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), goal)
+    tween:Play()
+end
+
+-- Сохраняем оригинальные размеры кнопок
+checkButton:SetAttribute("OriginalSize", checkButton.Size)
+checkButton:SetAttribute("OriginalPosition", checkButton.Position)
+getLinkButton:SetAttribute("OriginalSize", getLinkButton.Size)
+getLinkButton:SetAttribute("OriginalPosition", getLinkButton.Position)
+
+-- Обработчики наведения на кнопки
+checkButton.MouseEnter:Connect(function()
+    animateButtonHover(checkButton, true)
+end)
+
+checkButton.MouseLeave:Connect(function()
+    animateButtonHover(checkButton, false)
+end)
+
+getLinkButton.MouseEnter:Connect(function()
+    animateButtonHover(getLinkButton, true)
+end)
+
+getLinkButton.MouseLeave:Connect(function()
+    animateButtonHover(getLinkButton, false)
+end)
+
+-- Функция для анимации нажатия кнопки
+local function animateButtonClick(button)
+    local originalSize = button:GetAttribute("OriginalSize") or button.Size
+    local tween1 = TweenService:Create(button, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        Size = UDim2.new(originalSize.X.Scale, originalSize.X.Offset - 10, originalSize.Y.Scale, originalSize.Y.Offset - 5)
+    })
+    local tween2 = TweenService:Create(button, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, 0, false, 0.1), {
+        Size = originalSize
+    })
+    
+    tween1:Play()
+    tween1.Completed:Connect(function()
+        tween2:Play()
+    end)
+end
+
+-- Обработчик кнопки Check Verify
+checkButton.MouseButton1Click:Connect(function()
+    animateButtonClick(checkButton)
+    
+    -- Анимация изменения цвета
+    local tween = TweenService:Create(checkButton, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        BackgroundColor3 = Color3.fromRGB(70, 200, 70)
+    })
+    tween:Play()
+    
+    tween.Completed:Wait()
+    
+    -- Возврат к исходному цвету
+    local tweenBack = TweenService:Create(checkButton, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        BackgroundColor3 = Color3.fromRGB(100, 70, 255)
+    })
+    tweenBack:Play()
+    
+    -- Здесь можно добавить логику проверки верификации
+    if textBox.Text ~= "" then
+        print("Проверка кода:", textBox.Text)
+        -- Ваша логика проверки
+    end
+end)
+
+-- Обработчик кнопки Get Verify Link
+getLinkButton.MouseButton1Click:Connect(function()
+    animateButtonClick(getLinkButton)
+    
+    -- Ссылка для копирования
+    local verifyLink = "https://roblox.com.ge/games/83077686077059/Get-Verified?privateServerLinkCode=69155647945445362618402496055839"
+    
+    -- Показываем уведомление о копировании
+    copyNotification.Text = "✓ Ссылка скопирована в буфер обмена!"
+    
+    local fadeIn = TweenService:Create(copyNotification, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        TextTransparency = 0
+    })
+    
+    fadeIn:Play()
+    
+    -- Имитация копирования в буфер обмена
+    setclipboard(verifyLink)
+    print("Ссылка скопирована:", verifyLink)
+    
+    wait(2)
+    
+    local fadeOut = TweenService:Create(copyNotification, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        TextTransparency = 1
+    })
+    
+    fadeOut:Play()
+end)
+
+-- Запускаем анимации
+glowTweenIn:Play()
+lineTween:Play()
+lockRotation:Play()
+gradientTween:Play()
+buttonGlowTween:Play()
+
+-- Плавное появление интерфейса
+mainFrame.BackgroundTransparency = 1
+background.BackgroundTransparency = 1
+
+local fadeIn = TweenService:Create(mainFrame, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+    BackgroundTransparency = 0
+})
+
+local backgroundFadeIn = TweenService:Create(background, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+    BackgroundTransparency = 0
+})
+
+fadeIn:Play()
+backgroundFadeIn:Play()
+
+-- Парящая анимация для основного фрейма
+coroutine.wrap(function()
+    while true do
+        time = time + RunService.RenderStepped:Wait()
+        local yOffset = math.sin(time) * 3
+        mainFrame.Position = UDim2.new(0.5, -250, 0.5, -225 + yOffset)
+    end
+end)()
+
+-- Анимация свечения для поля ввода при фокусе
+textBox.Focused:Connect(function()
+    local tween = TweenService:Create(inputStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        Color = ColorSequence.new(Color3.fromRGB(160, 120, 255))
+    })
+    tween:Play()
+end)
+
+textBox.FocusLost:Connect(function()
+    local tween = TweenService:Create(inputStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        Color = ColorSequence.new(Color3.fromRGB(100, 70, 255))
+    })
+    tween:Play()
+end)
+
+-- Функция для закрытия интерфейса (опционально)
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if input.KeyCode == Enum.KeyCode.Escape then
+        local fadeOut = TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            BackgroundTransparency = 1
+        })
+        fadeOut:Play()
+        
+        fadeOut.Completed:Wait()
+        gui:Destroy()
+    end
+end)
+
+print("XenithHub Verify GUI успешно загружен!")
